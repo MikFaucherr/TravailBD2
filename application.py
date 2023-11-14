@@ -463,7 +463,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Remplir les combobox pour les armes
                 if nom_arme and numero_arme:
                     combobox_arme = getattr(self, f"arme{numero_arme}")
-                    index_arme = combobox_arme.findText(nom_arme)-1
+                    index_arme = combobox_arme.findText(nom_arme)
                     if index_arme != -1:
                         combobox_arme.setCurrentIndex(index_arme)
                     else:
