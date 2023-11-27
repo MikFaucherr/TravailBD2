@@ -174,12 +174,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def supprimer_partie(self):
         nom = self.charger_partie.currentText() 
+        requete = "SELECT fiche_id FROM sauvegarde WHERE nom = %(nom)s"
+        parametres = {'nom': nom}
+        cursor = cnx.cursor()
+        cursor.execute(requete, parametres)
+        resultat = cursor.fetchone()
+        id = resultat[0]
+        cursor.close()
+
+
+        requete = "DELETE FROM lien_armes WHERE fiche_id = %(id)s;"
+        parametres = {'id': id}
+        cursor = cnx.cursor()
+        cursor.execute(requete, parametres)
+        cnx.commit()
+
+        requete = "DELETE FROM lien_disciplines_Kai WHERE fiche_id = %(id)s;"
+        parametres = {'id': id}
+        cursor = cnx.cursor()
+        cursor.execute(requete, parametres)
+        cnx.commit()
+
         requete = "DELETE FROM sauvegarde WHERE nom = %(nom)s;"
         parametres = {'nom': nom}
         cursor = cnx.cursor()
         cursor.execute(requete, parametres)
         cnx.commit()
-        id = cursor.lastrowid
+
         self.charger_partie.clear()
         self.afficher_sauvegarde()
         cursor.close()
@@ -189,7 +210,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cursor = cnx.cursor()
         cursor.execute(requete, parametres)
         cnx.commit()
-        self.charger_partie.clear()
+        self.charger_partie.clear() 
         self.afficher_sauvegarde()
         cursor.close()
 
@@ -370,6 +391,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         ######
         nom = self.charger_partie.currentText()
+        self.label_11.setText(nom)
         requete_info = "SELECT livre.titre, fiche_personnage.*, no_chapitre_id FROM sauvegarde \
                     LEFT JOIN livre ON sauvegarde.livre_id = livre.id \
                     LEFT JOIN fiche_personnage ON sauvegarde.fiche_id = fiche_personnage.id \
